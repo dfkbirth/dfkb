@@ -49,7 +49,25 @@ body {
     background: #e2f4f7 !important; 
     border-bottom: 2px solid #000a22 !important; 
 } 
-.terminal-header span, .terminal-header .title { color: #000a22 !important; }
+
+/* Glitch keyframe tuned for light cyan theme */
+@keyframes titleGlitchLight {
+    0% { transform: translate(0, 0); text-shadow: none; }
+    15% { transform: translate(-0.8px, 0.5px); text-shadow: 1.5px 0 #00f2ff; }
+    18% { transform: translate(0.8px, -0.5px); text-shadow: -1.5px 0 #e040fb; }
+    20% { transform: translate(0, 0); text-shadow: none; }
+    65% { transform: translate(0, 0); text-shadow: none; }
+    68% { transform: translate(-1.2px, -0.4px); text-shadow: 1.8px 0 #00f2ff; }
+    72% { transform: translate(1.2px, 0.4px); text-shadow: -1.8px 0 #e040fb; }
+    75% { transform: translate(0, 0); text-shadow: none; }
+    100% { transform: translate(0, 0); text-shadow: none; }
+}
+
+.terminal-header span, .terminal-header .title { 
+    color: #000a22 !important; 
+    animation: titleGlitchLight 2.5s infinite steps(1, start) !important;
+}
+
 .theme-toggle { color: #e040fb !important; }
 
 blockquote { 
@@ -62,7 +80,6 @@ blockquote {
 .category-banner-thumb { border: 1px solid #000a22 !important; }
 .category-header-box h2 { color: #000a22 !important; } 
 
-/* Vault Wrapper & Minimize Button */
 .vault-wrapper {
     border: 1px dashed rgba(0, 10, 34, 0.3) !important;
     background: #f4fafc !important;
@@ -95,7 +112,6 @@ blockquote {
     color: #00f2ff !important;
 }
 
-/* Scrollable Vault Container Styles (Increased padding to 20px for extra inner space) */
 #catalogContainer {
     max-height: 500px;
     overflow-y: auto;

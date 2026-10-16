@@ -129,21 +129,21 @@
 
     const vaultCategories = [
         {
-            title: "$ bootleg_vault_stream // raw singles",
+            title: "$ MEXICAN_JUNKIE_EP",
             sectionImage: "assets/images/blair-icon-red.png", 
             tracks: [
-                { id: "s1", tag: "BOUNCE", date: "2026-10-02", name: "raw_cut_01", src: "assets/audio/ep-singles/single1/track2.wav", cover: "assets/images/covers/grillz/cover2.jpg", youtube: "https://youtube.com/your-video-1", likes: 14 },
-                { id: "s2", tag: "LIVE", date: "2026-09-28", name: "midnight_freq", src: "assets/audio/ep-singles/single2/track2.wav", cover: "assets/images/covers/track1/cover1.jpg", youtube: "", likes: 28 },
-                { id: "s3", tag: "ALT", date: "2026-09-25", name: "overdriven_riff_session", src: "assets/audio/ep-singles/single1/track2.wav", cover: "assets/images/covers/grillz/cover2.jpg", youtube: "", likes: 19 },
-                { id: "s4", tag: "DEMO", date: "2026-09-22", name: "4_track_cassette_loop", src: "assets/audio/ep-singles/single2/track2.wav", cover: "assets/images/covers/track1/cover1.jpg", youtube: "", likes: 42 }
+                { id: "s1", tags: ["ELECTRIC", "DEMOS"], date: "2026-10-02", name: "01_spite_frequency", src: "assets/audio/ep-singles/single1/track2.wav", cover: "assets/images/covers/grillz/cover2.jpg", youtube: "https://youtube.com/your-video-1", likes: 14 },
+                { id: "s2", tags: ["SINGLES", "ELECTRIC"], date: "2026-09-28", name: "02_system_expiration_001", src: "assets/audio/ep-singles/single2/track2.wav", cover: "assets/images/covers/track1/cover1.jpg", youtube: "", likes: 28 },
+                { id: "s3", tags: ["DEMOS", "ACUSTIC"], date: "2026-09-25", name: "03_dont_buy_this.raw", src: "assets/audio/ep-singles/single1/track2.wav", cover: "assets/images/covers/grillz/cover2.jpg", youtube: "", likes: 19 },
+                { id: "s4", tags: ["DEMOS"], date: "2026-09-22", name: "04_4_track_cassette_loop", src: "assets/audio/ep-singles/single2/track2.wav", cover: "assets/images/covers/track1/cover1.jpg", youtube: "", likes: 42 }
             ]
         },
         {
-            title: "$ live_room_archives // unedited rehearsal tapes",
+            title: "$ COVERS",
             sectionImage: "assets/images/blair-icon-original.png", 
             tracks: [
-                { id: "l1", tag: "LIVE", date: "2026-09-15", name: "chopo_rehearsal_take1", src: "assets/audio/ep-singles/single3/track3.wav", cover: "assets/images/covers/single3/cover.jpg", youtube: "", likes: 31 },
-                { id: "l2", tag: "LIVE", date: "2026-09-10", name: "feedback_loop_experiment", src: "assets/audio/ep-singles/single4/track4.wav", cover: "assets/images/covers/single4/cover.jpg", youtube: "", likes: 22 }
+                { id: "l1", tags: ["COVERS", "ACUSTIC"], date: "2026-09-15", name: "chopo_noise_take_01", src: "assets/audio/ep-singles/single3/track3.wav", cover: "assets/images/covers/single3/cover.jpg", youtube: "", likes: 31 },
+                { id: "l2", tags: ["COVERS", "ELECTRIC"], date: "2026-09-10", name: "feedback_loop_experiment", src: "assets/audio/ep-singles/single4/track4.wav", cover: "assets/images/covers/single4/cover.jpg", youtube: "", likes: 22 }
             ]
         }
     ];
@@ -155,7 +155,13 @@
         if (!catalogContainer) return;
         
         catalogContainer.innerHTML = vaultCategories.map(cat => {
-            const filteredTracks = cat.tracks.filter(track => filterTag === 'ALL' || track.tag === filterTag);
+            // Check if filterTag matches any tag in the track's tags array
+            const filteredTracks = cat.tracks.filter(track => {
+                if (filterTag === 'ALL') return true;
+                if (!track.tags) return false;
+                return Array.isArray(track.tags) ? track.tags.includes(filterTag) : track.tags === filterTag;
+            });
+
             if (filteredTracks.length === 0) return ''; 
 
             return `
@@ -166,11 +172,15 @@
                 <div class="audio-grid">
                     ${filteredTracks.map((track) => {
                         const globalIdx = allTracks.findIndex(t => t.id === track.id);
+                        // Map multiple tags into individual UI badges
+                        const tagList = Array.isArray(track.tags) ? track.tags : [track.tags];
+                        const tagBadges = tagList.map(t => `<span class="track-tag-badge">[${t}]</span>`).join(' ');
+
                         return `
                             <button id="track_card_${globalIdx}" onclick="playTrack(${globalIdx})">
                                 <div class="track-btn-info">
                                     <img class="btn-thumb" src="${track.cover}" alt="cover">
-                                    <span class="track-tag-badge">[${track.tag}]</span>
+                                    ${tagBadges}
                                     <span style="font-size: 0.75em; opacity: 0.6;">${track.date}</span>
                                     <span style="font-weight: bold;">${track.name}</span>
                                 </div>
