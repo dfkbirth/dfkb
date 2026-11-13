@@ -129,7 +129,7 @@
 
     const vaultCategories = [
         {
-            title: "$ MEXICAN_JUNKIE_EP",
+            title: "$ MEXICAN_JUNKIE",
             sectionImage: "assets/images/blair-icon-red.png", 
             tracks: [
                 { id: "s1", tags: ["ELECTRIC", "DEMOS"], date: "2026-10-02", name: "01_spite_frequency", src: "assets/audio/ep-singles/single1/track2.wav", cover: "assets/images/covers/grillz/cover2.jpg", youtube: "https://youtube.com/your-video-1", likes: 14 },
@@ -155,7 +155,6 @@
         if (!catalogContainer) return;
         
         catalogContainer.innerHTML = vaultCategories.map(cat => {
-            // Check if filterTag matches any tag in the track's tags array
             const filteredTracks = cat.tracks.filter(track => {
                 if (filterTag === 'ALL') return true;
                 if (!track.tags) return false;
@@ -172,7 +171,6 @@
                 <div class="audio-grid">
                     ${filteredTracks.map((track) => {
                         const globalIdx = allTracks.findIndex(t => t.id === track.id);
-                        // Map multiple tags into individual UI badges
                         const tagList = Array.isArray(track.tags) ? track.tags : [track.tags];
                         const tagBadges = tagList.map(t => `<span class="track-tag-badge">[${t}]</span>`).join(' ');
 
@@ -197,7 +195,14 @@
 
     window.filterVault = function(selectedTag) {
         document.querySelectorAll('.filter-tag').forEach(btn => btn.classList.remove('active'));
-        if (event && event.target) event.target.classList.add('active');
+        
+        if (event && event.currentTarget) {
+            const clickedBtn = event.currentTarget;
+            clickedBtn.classList.remove('active');
+            void clickedBtn.offsetWidth; // Force DOM reflow to restart one-time glitch animation
+            clickedBtn.classList.add('active');
+        }
+        
         renderCatalog(selectedTag);
     };
 
@@ -329,6 +334,9 @@
         currentTrackIndex = index;
         currentTrack = allTracks[index];
         if (currentTrack) {
+            const newUrl = `${window.location.origin}${window.location.pathname}?track=${currentTrack.id}`;
+            window.history.pushState({ trackId: currentTrack.id }, '', newUrl);
+
             nowPlaying.textContent = '▶ Playing: ' + currentTrack.name;
             if (trackTitleDisplay) trackTitleDisplay.textContent = currentTrack.name;
             if (likeCountDisplay) likeCountDisplay.textContent = currentTrack.likes;
@@ -418,6 +426,18 @@
         }
     };
 
+    // Auto-play shared track on load
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedTrackId = urlParams.get('track');
+    if (sharedTrackId) {
+        const foundIdx = allTracks.findIndex(t => t.id === sharedTrackId);
+        if (foundIdx !== -1) {
+            setTimeout(() => {
+                playTrack(foundIdx);
+            }, 300);
+        }
+    }
+
     window.togglePause = function() {
         if (wavesurfer) {
             if (wavesurfer.isPlaying()) {
@@ -440,6 +460,7 @@
         if (youtubeLinkContainer) youtubeLinkContainer.classList.add('hidden');
         updateActiveCardVisuals(null, false);
         nowPlaying.textContent = '▶ load frequency... select a track fragment';
+        window.history.pushState({}, '', window.location.pathname);
     };
 
     window.changeSpeedSlider = function(val) {
@@ -518,17 +539,25 @@
         }
     };
 
+    window.getShareableUrl = function() {
+        if (currentTrack) {
+            return `${window.location.origin}${window.location.pathname}?track=${currentTrack.id}`;
+        }
+        return window.location.href;
+    };
+
     window.copyTrackLink = function() {
-        navigator.clipboard.writeText(window.location.href);
+        navigator.clipboard.writeText(getShareableUrl());
         alert('Track link copied to clipboard!');
     };
 
     window.shareTrack = function() {
+        const shareUrl = getShareableUrl();
         if (navigator.share) {
             navigator.share({
                 title: currentTrack ? currentTrack.name : 'Track',
                 text: 'Check out this track on dfkb // sound terminal',
-                url: window.location.href,
+                url: shareUrl,
             }).catch(() => {});
         } else {
             copyTrackLink();
@@ -563,4 +592,24 @@
             }
         }
     });
-});
+    
+
+    // Fix for custom validation messages on the newsletter input
+    const newsletterInput = document.querySelector('.newsletter-input');
+    if (newsletterInput) {
+        newsletterInput.addEventListener('invalid', function (e) {
+            // REMOVED: e.preventDefault(); 
+            // We want the default popup to show, but with our custom text.
+            
+            if (!this.value) {
+                this.setCustomValidity('> ERROR: email_address required');
+            } else {
+                this.setCustomValidity('> ERROR: invalid frequency format');
+            }
+        });
+        
+        newsletterInput.addEventListener('input', function () {
+            this.setCustomValidity(''); // Reset when user types so they can submit
+        });
+    }
+}); // <--- THIS IS THE ONLY ONE YOU NEED TO CLOSE THE DOMContentLoaded EVENT  

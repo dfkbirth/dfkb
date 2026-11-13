@@ -39,7 +39,7 @@ body {
 }
 
 .audio-grid button.is-playing-card {
-    animation: artworkGlitch 2.5s infinite steps(1, start) !important;
+    animation: glitchError 0.5s ease forwards !important;
     background: rgba(0, 242, 255, 0.15) !important;
     border: 1px solid #00f2ff !important;
     box-shadow: 0 0 15px rgba(0, 242, 255, 0.5), 3px 0 rgba(224, 64, 251, 0.6) !important;
@@ -50,7 +50,6 @@ body {
     border-bottom: 2px solid #000a22 !important; 
 } 
 
-/* Glitch keyframe tuned for light cyan theme */
 @keyframes titleGlitchLight {
     0% { transform: translate(0, 0); text-shadow: none; }
     15% { transform: translate(-0.8px, 0.5px); text-shadow: 1.5px 0 #00f2ff; }
@@ -79,6 +78,15 @@ blockquote {
 .category-header-box { border-bottom: 1px dashed #00f2ff !important; }
 .category-banner-thumb { border: 1px solid #000a22 !important; }
 .category-header-box h2 { color: #000a22 !important; } 
+
+/* One-time Glitch Effect on Selected Filter Tag for Light Theme */
+.filter-bar .filter-tag.active {
+    background: #00f2ff !important;
+    color: #000a22 !important;
+    border-color: #000a22 !important;
+    animation: artworkGlitch 0.5s ease forwards !important;
+    box-shadow: 0 0 12px rgba(0, 242, 255, 0.6), 2px 0 rgba(224, 64, 251, 0.7) !important;
+}
 
 .vault-wrapper {
     border: 1px dashed rgba(0, 10, 34, 0.3) !important;
@@ -238,4 +246,38 @@ blockquote {
     .audio-grid { grid-template-columns: 1fr; } 
     .controls-bar { flex-direction: column; gap: 12px; align-items: center; } 
     .merch-content { flex-direction: column; text-align: center; }
+}
+
+/* --- Existing Light Theme Newsletter CSS --- */
+.newsletter-content { 
+    background: #f4fafc !important; 
+    border: 1px solid #000a22 !important; 
+}
+.newsletter-desc { color: #000a22 !important; }
+.newsletter-input { 
+    background: #fdfdfd !important; 
+    border: 1px solid #000a22 !important; 
+    color: #000a22 !important; 
+    padding: 10px 12px !important;
+    min-width: 0 !important;
+}
+.newsletter-input::placeholder { color: rgba(0, 10, 34, 0.5) !important; }
+.newsletter-submit-btn { 
+    background: #00f2ff !important; 
+    color: #000a22 !important; 
+    border: 1px solid #000a22 !important; 
+    white-space: nowrap !important;
+}
+.newsletter-submit-btn:hover { background: #000a22 !important; color: #00f2ff !important; }
+
+/* --- NEW: Mobile Responsiveness for Light Theme --- */
+@media (max-width: 768px) {
+    .terminal-form {
+        flex-direction: column !important;
+    }
+    .newsletter-input, 
+    .newsletter-submit-btn {
+        width: 100% !important;
+        text-align: center !important;
+    }
 }
